@@ -1,0 +1,2 @@
+rootProject.name='EasyEdit'
+include ':app'
