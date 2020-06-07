@@ -24,6 +24,8 @@ import java.io.StringWriter;
 
 public class MainActivity extends AppCompatActivity {
     public static EditText text;
+    public static String path;
+    public static Boolean isOpened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
-        handleIntent();
+        path = handleIntent();
+        if(path != null){
+            isOpened = true;
+        }
     }
 
     @Override
@@ -47,14 +52,12 @@ public class MainActivity extends AppCompatActivity {
         menuSave.setIntent(new Intent(this, SaveActivity.class));
         return super.onCreateOptionsMenu(menu);
     }
-    private void handleIntent() {
+    private String handleIntent() {
 
         Uri uri = getIntent().getData();
         if (uri == null) {
-            tellUserThatCouldntOpenFile();
-            return;
+            return null;
         }
-
         String tmp = null;
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
@@ -64,17 +67,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         if (tmp == null) {
-            tellUserThatCouldntOpenFile();
-            return;
+            return null;
         }
-
         text.setText(tmp);
-    }
-
-    private void tellUserThatCouldntOpenFile() {
-        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+        return uri.getPath();
     }
 
     public static String getStringFromInputStream(InputStream stream) throws IOException {
