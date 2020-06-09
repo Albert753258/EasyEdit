@@ -1,10 +1,13 @@
 package ru.albert.easyedit;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -64,5 +67,12 @@ public class OpenActivity extends AppCompatActivity {
         StringWriter writer = new StringWriter();
         while (-1 != (n = reader.read(buffer))) writer.write(buffer, 0, n);
         return writer.toString();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuItem menuSave = menu.add(0, 1, 0, "Сохранить");
+        //MenuItem menuOpen = menu.add(0, 1, 0, "Открыть");
+        menuSave.setIntent(new Intent(this, SaveActivity.class));
+        return super.onCreateOptionsMenu(menu);
     }
 }

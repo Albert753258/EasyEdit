@@ -13,11 +13,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class SaveActivity extends AppCompatActivity {
@@ -43,13 +46,20 @@ public class SaveActivity extends AppCompatActivity {
             listView = findViewById(R.id.listView);
             final File f = Environment.getExternalStorageDirectory();
             path = f.getPath();
-            File[] list = f.listFiles();
             ArrayList<String> arrayList = new ArrayList();
             arrayList.add("..");
-            for(File file: list){
-                if(file.isDirectory()){
-                    arrayList.add(file.getAbsolutePath());
+            try {
+                String[] command = {"find", path, "-maxdepth", "1", "-type", "d"};
+                Process process = Runtime.getRuntime().exec(command);
+                BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String s = stdInput.readLine();
+                while ((s = stdInput.readLine()) != null){
+                    arrayList.add(s);
                 }
+                int i = 0;
+            }
+            catch (IOException e) {
+                e.printStackTrace();
             }
             ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayList);
             listView.setAdapter(adapter);
@@ -57,12 +67,11 @@ public class SaveActivity extends AppCompatActivity {
             dialog.setContentView(R.layout.dialog);
             activity = this;
             dirButton.setOnClickListener(new Button.OnClickListener(){
-
                 @Override
                 public void onClick(View v) { dialog.setTitle("Заголовок диалога");
                     dialog.show();
                     saveButton = dialog.findViewById(R.id.saveButton);
-                    fileName = dialog.findViewById(R.id.fileName);
+                    fileName = dialog.findViewById( R.id.fileName);
                     saveButton.setOnClickListener(new Button.OnClickListener() {
 
                         @Override
@@ -87,19 +96,22 @@ public class SaveActivity extends AppCompatActivity {
                         }
                         int i = 0;
                     }
-                    File f = new File(pathName);
-                    path = pathName;
-                    System.out.println(f.getPath());
-                    File[] list = f.listFiles();
-                    ArrayList<String> arrayList = new ArrayList();
-                    arrayList.add("..");
-                    for(File file: list){
-                        if(file.isDirectory()){
-                            arrayList.add(file.getAbsolutePath());
+                    try {
+                        path = pathName;
+                        ArrayList<String> arrayList = new ArrayList();
+                        arrayList.add("..");
+                        String[] command = {"find", path, "-maxdepth", "1", "-type", "d"};
+                        Process process = Runtime.getRuntime().exec(command);
+                        BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                        String s = stdInput.readLine();
+                        while ((s = stdInput.readLine()) != null){
+                            arrayList.add(s);
                         }
+                        ArrayAdapter<String> adapter = new ArrayAdapter(activity, android.R.layout.simple_list_item_1, arrayList);
+                        listView.setAdapter(adapter);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    ArrayAdapter<String> adapter = new ArrayAdapter(activity, android.R.layout.simple_list_item_1, arrayList);
-                    listView.setAdapter(adapter);
                 }
             });
         }
