@@ -24,8 +24,6 @@ import java.io.StringWriter;
 
 public class MainActivity extends AppCompatActivity {
     public static EditText text;
-    public static String path;
-    public static Boolean isOpened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +37,6 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
-        path = handleIntent();
-        if(path != null){
-            isOpened = true;
-        }
     }
 
     @Override
@@ -51,35 +45,5 @@ public class MainActivity extends AppCompatActivity {
         //MenuItem menuOpen = menu.add(0, 1, 0, "Открыть");
         menuSave.setIntent(new Intent(this, SaveActivity.class));
         return super.onCreateOptionsMenu(menu);
-    }
-    private String handleIntent() {
-
-        Uri uri = getIntent().getData();
-        if (uri == null) {
-            return null;
-        }
-        String tmp = null;
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            tmp = getStringFromInputStream(inputStream);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (tmp == null) {
-            return null;
-        }
-        text.setText(tmp);
-        return uri.getPath();
-    }
-
-    public static String getStringFromInputStream(InputStream stream) throws IOException {
-        int n = 0;
-        char[] buffer = new char[1024 * 4];
-        InputStreamReader reader = new InputStreamReader(stream, "UTF8");
-        StringWriter writer = new StringWriter();
-        while (-1 != (n = reader.read(buffer))) writer.write(buffer, 0, n);
-        return writer.toString();
     }
 }

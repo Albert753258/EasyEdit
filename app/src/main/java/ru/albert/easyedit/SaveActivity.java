@@ -33,8 +33,8 @@ public class SaveActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.savefile);
-        if(MainActivity.isOpened){
-            path = MainActivity.path;
+        if(OpenActivity.isOpened){
+            path = OpenActivity.path;
             saveFile();
             finish();
         }
